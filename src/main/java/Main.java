@@ -1,8 +1,8 @@
-/**
- * Created by bumbum on 10.03.2016.
- */
+import recipe.RecipeDAO;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        RecipeDAO recipeDAO = new RecipeDAO();
+        System.out.println(recipeDAO.read());
     }
 }
