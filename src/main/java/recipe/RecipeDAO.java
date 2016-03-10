@@ -19,6 +19,7 @@ public class RecipeDAO {
         //TODO(nicoleubk): Replace with actual logic later
         return new Recipe(
                 "Pancakes",
+                RecipeType.VEGETARIAN,
                 ImmutableList.of("8 eggs", "1 cup of flour", "One teaspoon of salt"),
                 ImmutableList.of("Mix batter", "Fry pancakes")
         );
