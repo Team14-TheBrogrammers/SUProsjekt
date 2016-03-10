@@ -8,12 +8,14 @@ import java.util.List;
  */
 public class Recipe {
 
-    public String recipeName;
-    public List<String> ingredients;
-    public List<String> instructions;
+    private String recipeName;
+    private RecipeType recipeType;
+    private List<String> ingredients;
+    private List<String> instructions;
 
-    public Recipe(String recipeName, List<String> ingredients, List<String> instructions) {
+    public Recipe(String recipeName, RecipeType recipeType, List<String> ingredients, List<String> instructions) {
         this.recipeName = recipeName;
+        this.recipeType = recipeType;
         this.ingredients = ingredients;
         this.instructions = instructions;
     }
@@ -24,6 +26,14 @@ public class Recipe {
 
     public void setRecipeName(String recipeName) {
         this.recipeName = recipeName;
+    }
+
+    public RecipeType getRecipeType() {
+        return recipeType;
+    }
+
+    public void setRecipeType(RecipeType recipeType) {
+        this.recipeType = recipeType;
     }
 
     public List<String> getIngredients() {
@@ -43,8 +53,9 @@ public class Recipe {
     }
 
     public String toString() {
-        return recipeName + ":\n" + ingredients + "\n" + instructions;
+        return recipeName + " (" + recipeType.name() + "):\n" + ingredients + "\n" + instructions;
     }
+
 
 
 }
