@@ -11,19 +11,16 @@ public class Main {
         Connection connection = getConnection(); // This could have been new DbConnector();
         RecipeDAO recipeDAO = new RecipeDAO(connection);
         recipeDAO.create(
-                "Better Banana Pancakes",
+                "Curry Supreme",
                 ImmutableList.of(
-                        new Ingredient("Banana", "1 cup"),
-                        new Ingredient("Pancake", "100 grams"),
-                        new Ingredient("Milk", "1 meter")
+                        new Ingredient("Chicken thighs", "600 grams"),
+                        new Ingredient("Coconut milk", "1 can"),
+                        new Ingredient("Curry paste", "1 tablespoon"),
+                        new Ingredient("Carrot", "2 pieces"),
+                        new Ingredient("Potato", "2 pieces")
                 )
         );
     }
-
-
-
-
-
 
     private static Connection getConnection() throws ClassNotFoundException {
         Connection connection;
@@ -32,7 +29,7 @@ public class Main {
         String PASSWORD = "wjbxoEpx";
         Class.forName("com.mysql.jdbc.Driver");
         try {
-            connection = DriverManager.getConnection (DATABASE_URL, USERNAME, PASSWORD);
+            connection = DriverManager.getConnection(DATABASE_URL, USERNAME, PASSWORD);
         } catch (Exception e) {
             connection = null;
             e.printStackTrace();

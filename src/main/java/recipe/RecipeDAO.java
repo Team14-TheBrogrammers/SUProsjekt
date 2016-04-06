@@ -5,7 +5,6 @@ import com.mysql.jdbc.Statement;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -23,49 +22,58 @@ public class RecipeDAO {
     }
 
     public boolean create(String recipeName, List<Ingredient> ingredients) {
-        int recipeId = 0;
-        int ingredientId = 0;
+        if( !addRecipe(recipeName) ) {
+            return false;
+        }
+        if( !addIngredients(recipeName, ingredients) ) {
+            return false;
+        }
+        return addInstructions(recipeName);
+    }
+
+    private boolean addInstructions(String recipeName) {
+        return false;
+    }
+
+    private boolean addRecipe(String recipeName) {
         try {
             PreparedStatement pStatement = connection.prepareStatement(
-                    "INSERT INTO recipe(recipe_id, recipe_name) VALUES (NULL, ?)",
-                    Statement.RETURN_GENERATED_KEYS
+                    "INSERT INTO recipe(recipe_name) VALUES (?)"
             );
             pStatement.setString(1, recipeName);
             pStatement.execute();
-            ResultSet resultSet = pStatement.getGeneratedKeys();
-            if (resultSet.next()) {
-                recipeId = resultSet.getInt(1);
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
+            return true;
+        } catch(SQLException e) {
+            System.err.println(e);
+            return false;
         }
 
+    }
+
+    private boolean addIngredients(String recipeName, List<Ingredient> ingredients) {
         for (Ingredient ingredient : ingredients) {
             try {
                 PreparedStatement pStatement = connection.prepareStatement(
-                        "INSERT INTO ingredients(ingredient_id, ingredient_name) VALUES (NULL, ?)",
-                        Statement.RETURN_GENERATED_KEYS
+                        "INSERT INTO ingredients(ingredient_name) VALUES (?)"
                 );
                 pStatement.setString(1, ingredient.getIngredientName());
                 pStatement.execute();
-                ResultSet resultSet = pStatement.getGeneratedKeys();
-                if (resultSet.next()) {
-                    ingredientId = resultSet.getInt(1);
-                }
-                try {
-                    PreparedStatement pStatement2 = connection.prepareStatement(
-                            "INSERT INTO recipe_ingredients(recipe_id, ingredient_id, quantity) VALUES (?,?,?)"
-                    );
-                    pStatement2.setInt(1, recipeId);
-                    pStatement2.setInt(2, ingredientId);
-                    pStatement2.setString(3, ingredient.getQuantity());
-                    pStatement2.execute();
-                } catch (SQLException e) {
-                    System.out.println(e);
-                }
             } catch (SQLException e) {
                 System.out.println(e);
             }
+
+            try {
+                PreparedStatement pStatement = connection.prepareStatement(
+                        "INSERT INTO recipe_ingredients(recipe_name, ingredient_name, quantity) VALUES (?,?,?)"
+                );
+                pStatement.setString(1, recipeName);
+                pStatement.setString(2, ingredient.getIngredientName());
+                pStatement.setString(3, ingredient.getQuantity());
+                pStatement.execute();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+
         }
         return true;
     }
