@@ -6,12 +6,8 @@ import com.mysql.jdbc.Statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-
-/**
- * Created by Nicole on 09.03.2016.
- * Data access object
- */
 
 public class RecipeDAO {
 
@@ -21,18 +17,14 @@ public class RecipeDAO {
         this.connection = connection;
     }
 
-    public boolean create(String recipeName, List<Ingredient> ingredients) {
-        if( !addRecipe(recipeName) ) {
+    public boolean create(String recipeName, List<Ingredient> ingredients, List<Instruction> instructions) {
+        if (!addRecipe(recipeName)) {
             return false;
         }
-        if( !addIngredients(recipeName, ingredients) ) {
+        if (!addIngredients(recipeName, ingredients)) {
             return false;
         }
-        return addInstructions(recipeName);
-    }
-
-    private boolean addInstructions(String recipeName) {
-        return false;
+        return addInstructions(recipeName, instructions);
     }
 
     private boolean addRecipe(String recipeName) {
@@ -43,7 +35,7 @@ public class RecipeDAO {
             pStatement.setString(1, recipeName);
             pStatement.execute();
             return true;
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             System.err.println(e);
             return false;
         }
@@ -78,8 +70,41 @@ public class RecipeDAO {
         return true;
     }
 
-    public Recipe read() {
-        return null;
+    private boolean addInstructions(String recipeName, List<Instruction> instructions) {
+        for (Instruction instruction : instructions) {
+            try {
+                PreparedStatement pStatement = connection.prepareStatement(
+                        "INSERT INTO recipe_instructions(recipe_name, step_number, description) VALUES (?,?,?)"
+                );
+                pStatement.setString(1, recipeName);
+                pStatement.setInt(2, instruction.getStepNumber());
+                pStatement.setString(3, instruction.getDescription());
+                pStatement.execute();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
+        return true;
+    }
+
+    public Recipe read(String recipeName) {
+        List<Ingredient> ingredients = new ArrayList<>();
+        List<Instruction> instructions = new ArrayList<>();
+        RecipeType recipeType = RecipeType.VEGAN;
+        try {
+            PreparedStatement pStatement = connection.prepareStatement(
+                    "?"
+            );
+            pStatement.setString(1, recipeName);
+            pStatement.execute();
+
+            // you will have to iterate through a result-set,
+            // and fill the lists, as well as get the recipe type
+
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+        return new Recipe(recipeName, recipeType, ingredients, instructions);
     }
 
     public boolean update() {
@@ -92,3 +117,7 @@ public class RecipeDAO {
 
 
 }
+
+/*SELECT * FROM `recipe`
+right join recipe_instructions
+on recipe.recipe_name = recipe_instructions.recipe_name*/
