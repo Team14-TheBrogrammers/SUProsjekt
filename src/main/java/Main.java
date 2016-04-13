@@ -2,6 +2,7 @@ import com.google.common.collect.ImmutableList;
 import recipe.Ingredient;
 import recipe.Instruction;
 import recipe.RecipeDAO;
+import recipe.RecipeType;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,6 +14,7 @@ public class Main {
         RecipeDAO recipeDAO = new RecipeDAO(connection);
         recipeDAO.create(
                 "Curry even Supremererer",
+                RecipeType.MEATLOVER,
                 ImmutableList.of(
                         new Ingredient("Chicken thighs", "600 grams"),
                         new Ingredient("Coconut milk", "1 can"),
@@ -25,6 +27,7 @@ public class Main {
                         new Instruction(2, "Slice the veggies")
                 )
         );
+        System.out.println(recipeDAO.read("Curry even Supremererer"));
     }
 
     private static Connection getConnection() throws ClassNotFoundException {

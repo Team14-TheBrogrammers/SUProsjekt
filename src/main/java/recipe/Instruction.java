@@ -4,7 +4,7 @@ package recipe;
  * Created by Nicole on 07.04.2016.
  * Instruction class for recipe_instructions table
  */
-
+@lombok.ToString
 public class Instruction {
 
     private int stepNumber;

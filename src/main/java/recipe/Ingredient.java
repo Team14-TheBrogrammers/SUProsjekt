@@ -1,5 +1,6 @@
 package recipe;
 
+@lombok.ToString
 public class Ingredient {
 
     private String ingredientName;
