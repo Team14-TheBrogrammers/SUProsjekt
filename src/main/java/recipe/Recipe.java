@@ -12,12 +12,14 @@ public class Recipe {
     private RecipeType recipeType;
     private List<Ingredient> ingredients;
     private List<Instruction> instructions;
+    private double price;
 
-    public Recipe(String recipeName, RecipeType recipeType, List<Ingredient> ingredients, List<Instruction> instructions) {
+    public Recipe(String recipeName, RecipeType recipeType, List<Ingredient> ingredients, List<Instruction> instructions, double price) {
         this.recipeName = recipeName;
         this.recipeType = recipeType;
         this.ingredients = ingredients;
         this.instructions = instructions;
+        this.price = price;
     }
 
     public String getRecipeName() { return recipeName; }
@@ -50,8 +52,16 @@ public class Recipe {
         this.instructions = instructions;
     }
 
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
     public String toString() {
-        return recipeName + " (" + recipeType.name() + "):\n" + ingredients + "\n" + instructions;
+        return recipeName + " (" + recipeType.name() + "):\n" + ingredients + "\n" + instructions + "\n" + price;
     }
 
 

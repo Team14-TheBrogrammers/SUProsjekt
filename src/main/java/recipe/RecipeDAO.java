@@ -1,8 +1,5 @@
 package recipe;
 
-import com.google.common.collect.ImmutableList;
-import com.mysql.jdbc.Statement;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,8 +15,8 @@ public class RecipeDAO {
         this.connection = connection;
     }
 
-    public boolean create(String recipeName, RecipeType recipeType, List<Ingredient> ingredients, List<Instruction> instructions) {
-        if (!addRecipe(recipeName, recipeType)) {
+    public boolean create(String recipeName, RecipeType recipeType, List<Ingredient> ingredients, List<Instruction> instructions, double price) {
+        if (!addRecipe(recipeName, recipeType, price)) {
             return false;
         }
         if (!addIngredients(recipeName, ingredients)) {
@@ -28,13 +25,14 @@ public class RecipeDAO {
         return addInstructions(recipeName, instructions);
     }
 
-    private boolean addRecipe(String recipeName, RecipeType recipeType) {
+    private boolean addRecipe(String recipeName, RecipeType recipeType, double price) {
         try {
             PreparedStatement pStatement = connection.prepareStatement(
-                    "INSERT INTO recipe(recipe_name, recipe_type) VALUES (?,?)"
+                    "INSERT INTO Recipe(recipe_name, recipe_type, price) VALUES (?,?,?)"
             );
             pStatement.setString(1, recipeName);
             pStatement.setString(2, recipeType.name());
+            pStatement.setDouble(3, price);
             pStatement.execute();
             return true;
         } catch (SQLException e) {
@@ -48,7 +46,7 @@ public class RecipeDAO {
         for (Ingredient ingredient : ingredients) {
             try {
                 PreparedStatement pStatement = connection.prepareStatement(
-                        "INSERT INTO ingredients(ingredient_name) VALUES (?)"
+                        "INSERT INTO Ingredient(ingredient_name) VALUES (?)"
                 );
                 pStatement.setString(1, ingredient.getIngredientName());
                 pStatement.execute();
@@ -58,7 +56,7 @@ public class RecipeDAO {
 
             try {
                 PreparedStatement pStatement = connection.prepareStatement(
-                        "INSERT INTO recipe_ingredients(recipe_name, ingredient_name, quantity) VALUES (?,?,?)"
+                        "INSERT INTO Recipe_ingredient(recipe_name, ingredient_name, quantity) VALUES (?,?,?)"
                 );
                 pStatement.setString(1, recipeName);
                 pStatement.setString(2, ingredient.getIngredientName());
@@ -76,7 +74,7 @@ public class RecipeDAO {
         for (Instruction instruction : instructions) {
             try {
                 PreparedStatement pStatement = connection.prepareStatement(
-                        "INSERT INTO recipe_instructions(recipe_name, step_number, description) VALUES (?,?,?)"
+                        "INSERT INTO Recipe_instruction(recipe_name, step_number, description) VALUES (?,?,?)"
                 );
                 pStatement.setString(1, recipeName);
                 pStatement.setInt(2, instruction.getStepNumber());
@@ -93,9 +91,10 @@ public class RecipeDAO {
         List<Ingredient> ingredients = new ArrayList<>();
         List<Instruction> instructions = new ArrayList<>();
         RecipeType recipeType = null;
+        double price = 0;
         try {
             PreparedStatement pStatement = connection.prepareStatement(
-                    "SELECT * from recipe_ingredients WHERE recipe_name = (?)"
+                    "SELECT * from Recipe_ingredient WHERE recipe_name = (?)"
             );
             pStatement.setString(1, recipeName);
             pStatement.execute();
@@ -107,7 +106,7 @@ public class RecipeDAO {
             }
 
             pStatement = connection.prepareStatement(
-                    "SELECT * from recipe_instructions WHERE recipe_name = (?)"
+                    "SELECT * from Recipe_instruction WHERE recipe_name = (?)"
             );
 
             pStatement.setString(1, recipeName);
@@ -120,7 +119,7 @@ public class RecipeDAO {
             }
 
             pStatement = connection.prepareStatement(
-                    "SELECT recipe_type from recipe WHERE recipe_name = (?)"
+                    "SELECT recipe_type from Recipe WHERE recipe_name = (?)"
             );
 
             pStatement.setString(1, recipeName);
@@ -130,20 +129,33 @@ public class RecipeDAO {
 
             while (rs.next()) {
                 recipeType = RecipeType.valueOf(rs.getString("recipe_type"));
+                price = Double.parseDouble((rs.getString("price")));
             }
 
         } catch (SQLException e) {
             System.err.println(e);
         }
-        return new Recipe(recipeName, recipeType, ingredients, instructions);
+
+        return new Recipe(recipeName, recipeType, ingredients, instructions, price);
     }
 
     public boolean update() {
         return false;
     }
 
-    public boolean delete() {
-        return false;
-    }
+    public boolean delete(String recipeName) {
+        try {
+            PreparedStatement pStatement = connection.prepareStatement(
+                    "DELETE FROM Recipe WHERE recipe_name = (?) "
+            );
+            pStatement.setString(1, recipeName);
+            pStatement.execute();
+            return true;
 
+        } catch (SQLException e) {
+            System.err.println(e);
+            return false;
+        }
+    }
 }
+

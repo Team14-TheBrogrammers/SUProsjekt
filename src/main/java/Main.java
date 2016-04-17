@@ -25,10 +25,16 @@ public class Main {
                 ImmutableList.of(
                         new Instruction(1, "Marinate the chicken in curry paste"),
                         new Instruction(2, "Slice the veggies")
-                )
+                ),
+                60.0 //this
         );
-        System.out.println(recipeDAO.read("Curry even Supremererer"));
+
+        recipeDAO.delete("Curry even Supremererer");
+
     }
+
+
+
 
     private static Connection getConnection() throws ClassNotFoundException {
         Connection connection;
